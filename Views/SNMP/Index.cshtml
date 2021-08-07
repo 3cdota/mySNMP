@@ -1,0 +1,60 @@
+﻿@using SnmpSharpNet;
+
+@*@model  Dictionary<string, Dictionary<uint, AsnType>>*@
+@model  Dictionary<Oid,  AsnType>
+@{
+    ViewBag.Title = "snmp";
+}
+
+<h2>View</h2>
+
+@*<table class="table">
+    <tr>
+        <th>
+            /
+        </th>
+        @foreach (var item in Model.Values.FirstOrDefault())
+        {
+            <th>
+                @item.Key
+            </th>
+        }
+
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        if (item.Value[3].ToString() == "6")
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key)
+                </td>
+                @foreach (var kvp in item.Value)
+                {
+                    <td>
+                        @kvp.Value
+                    </td>
+                }
+            </tr>
+        }
+    }
+
+</table>*@
+<table class="table">
+    <tr>
+        <th>oid</th>
+        <th>value</th>
+        <th>type</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td> @item.Key.ToString()</td>
+        <td> @item.Value.ToString()</td>
+        <td> @SnmpConstants.GetTypeName(item.Value.Type)</td>
+    </tr>
+
+    }
+
+</table>
