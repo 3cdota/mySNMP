@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MIB.Controllers.HostController.Host>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IfIndex)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IfDesrc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IpAdress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MacAddress)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.IfIndex)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.IfDesrc)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.IpAdress)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.MacAddress)
+    </td>
+
+
+</tr>
+    }
+
+</table>
+

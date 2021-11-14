@@ -11,9 +11,9 @@ namespace MIB.Controllers
     public class EasySnmpController : Controller
     {
         // GET: EasySnmp
-        public ActionResult Index(string host)
+        public ActionResult Index(string ip="192.168.56.110")
         {
-            return View(GetifTable(host));
+            return View(GetifTable(ip));
         }
 
         public DataTable GetifTable(string host)

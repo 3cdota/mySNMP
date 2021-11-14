@@ -1,0 +1,22 @@
+﻿@model IEnumerable<EasySnmp.MibNode>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Oid</th>
+        <th>Value</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Oid</td>
+            <td>@item.value</td>
+        </tr>
+
+    }
+</table>

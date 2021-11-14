@@ -196,8 +196,10 @@
     <Compile Include="Controllers\EasySnmpController.cs" />
     <Compile Include="Controllers\FuckController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HostController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SNMPController.cs" />
+    <Compile Include="Controllers\SysInfoController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -272,6 +274,8 @@
     <Content Include="Views\SNMP\Index.cshtml" />
     <Content Include="Views\EasySnmp\Index.cshtml" />
     <Content Include="Views\Arp\Index.cshtml" />
+    <Content Include="Views\Host\Index.cshtml" />
+    <Content Include="Views\SysInfo\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

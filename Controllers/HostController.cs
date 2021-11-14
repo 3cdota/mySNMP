@@ -8,13 +8,22 @@ using System.Data;
 
 namespace MIB.Controllers
 {
-    public class ArpController : Controller
+    public class HostController : Controller
     {
-        // GET: Arp
+        // GET: Host
         public ActionResult Index(string ip="192.168.56.110")
         {
-            return View(GetArpTable(ip));
-           
+            List<Host> data = MeargeTable(ip);
+            return View(data);
+        }
+
+        public class Host
+        {
+            public int IfIndex { get; set; }
+            public string IfDesrc { get; set; }
+
+            public string MacAddress { get; set; }
+            public string IpAdress { get; set; }
         }
 
         public DataTable GetArpTable(string host)
@@ -45,12 +54,12 @@ namespace MIB.Controllers
 
         }
 
-        private string  GetIp(string value)
+        private string GetIp(string value)
         {
-            return string.Join(".",value.Split('.').Skip(1).Take(4).ToArray());
+            return string.Join(".", value.Split('.').Skip(1).Take(4).ToArray());
         }
 
-        public object MeargeTable(string host)
+        public List<Host> MeargeTable(string host)
 
         {
             DataTable arpTable = GetArpTable(host);
@@ -59,7 +68,7 @@ namespace MIB.Controllers
             var query = from a in ifTable.AsEnumerable()
                         join b in arpTable.AsEnumerable() on a["ifIndex"] equals b["hwArpDynOutIfIndex"] into ab
                         from c in ab.DefaultIfEmpty()
-                        select new { ifIndex = a["ifIndex"], ifDesrc = a["ifDesrc"], macAddress = c == null ? "" : c["hwArpDynMacAdd"], ip = c == null ? "" : GetIp(c["InstanceID"].ToString()) };
+                        select new Host { IfIndex =int.Parse( a["ifIndex"].ToString()), IfDesrc = a["ifDesrc"].ToString(), MacAddress = c == null ? "" : c["hwArpDynMacAdd"].ToString(), IpAdress = c == null ? "" : GetIp(c["InstanceID"].ToString()) };
             var data = query.ToList();
             return data;
         }
