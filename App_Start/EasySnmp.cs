@@ -28,10 +28,34 @@ namespace MIB
             /// </summary>
             public string TableOid { get; set; }
 
+            public List<TableIndex> Indexs { get; set; }
+
+            /// <summary>
+            /// 表的索引项，从哪里开始，到哪里结束
+            /// </summary>
+            public class TableIndex
+            {
+                //该索引的名称
+                public string IndexName { get; set; }
+                //跳过几个unint32
+                public int SkipNum { get; set; }
+                //占几个 uint32
+                public int TakeNum { get; set; }
+
+                public TableIndex(string indexName, int skipnum, int takeNum)
+                {
+                    this.IndexName = indexName;
+                    this.SkipNum = skipnum;
+                    this.TakeNum = takeNum;
+                }
+
+            }
+
             /// <summary>
             ///需要读取的列列表
             /// </summary>
             public List<TableColoum> Coloums { get; set; }
+
 
             /// <summary>
             /// 列结构
@@ -51,11 +75,19 @@ namespace MIB
                     this.ColoumOid = oid;
                     this.ColoumType = type;
                 }
+
+                public TableColoum(string name, string oid)
+                {
+                    this.ColoumName = name;
+                    this.ColoumOid = oid;
+                    this.ColoumType = typeof(string);
+                }
             }
 
             public MibTable()
             {
                 this.Coloums = new List<TableColoum>();
+                this.Indexs = new List<TableIndex>();
             }
 
 
@@ -163,6 +195,11 @@ namespace MIB
             DataTable dt = new DataTable(table.TableName);
             //instance ID
             dt.Columns.Add("InstanceID", typeof(String));
+            //添加索引项
+            foreach (MibTable.TableIndex index in table.Indexs)
+            {
+                dt.Columns.Add(index.IndexName);
+            }
             foreach (MibTable.TableColoum tc in table.Coloums)
             {
                 dt.Columns.Add(tc.ColoumName, tc.ColoumType);
@@ -180,22 +217,34 @@ namespace MIB
                 logger.Warn("No results received.");
                 return dt;
             }
+            Dictionary<string, string> DicIndexAndValue = null;
 
             foreach (var kvp in result)
             {
                 foreach (MibTable.TableColoum tc in table.Coloums)
                 {
+                    AsnType val = new OctetString("This is my test string");
                     Oid coid = new Oid(tc.ColoumOid);
                     // 如果该kvp 是某一列的值
                     if (coid.IsRootOf(kvp.Key))
                     {
-                        string instanceId = InstanceToString(Oid.GetChildIdentifiers(coid, kvp.Key));
+                        //索引项 
+                        UInt32[] arrayIndexs = Oid.GetChildIdentifiers(coid, kvp.Key);
+                        string instanceId = InstanceToString(arrayIndexs);
                         //查询已经是否存在当前行,如果无，则添加，如果有则更新
                         DataRow dr = dt.AsEnumerable().FirstOrDefault(r => r["InstanceID"].ToString() == instanceId);
                         if (dr == null)
                         {
                             dr = dt.NewRow();
                             dr["InstanceID"] = instanceId;
+                            //添加索引项
+                            foreach (MibTable.TableIndex index in table.Indexs)
+                            {
+                                UInt32[] arrayIndex = arrayIndexs.Skip(index.SkipNum)
+                                                    .Take(index.TakeNum).ToArray();
+                                string indexValue = InstanceToString(arrayIndex);
+                                dr[index.IndexName] = indexValue;
+                            }
                             dr[tc.ColoumName] = Parse(tc.ColoumType, kvp.Value.ToString());
                             dt.Rows.Add(dr);
                         }

@@ -20,3 +20,5 @@
 2021-08-22 20:29:30.8983|WARN|MIB.EasySnmp|No results received.
 2021-08-22 20:29:32.4403|WARN|MIB.EasySnmp|No results received.
 2021-10-08 14:54:52.0357|WARN|MIB.EasySnmp|No results received.
+2021-12-05 11:06:22.3588|WARN|MIB.EasySnmp|No results received.
+2021-12-13 00:02:27.4367|WARN|MIB.EasySnmp|No results received.
