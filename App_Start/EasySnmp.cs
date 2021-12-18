@@ -217,8 +217,6 @@ namespace MIB
                 logger.Warn("No results received.");
                 return dt;
             }
-            Dictionary<string, string> DicIndexAndValue = null;
-
             foreach (var kvp in result)
             {
                 foreach (MibTable.TableColoum tc in table.Coloums)
