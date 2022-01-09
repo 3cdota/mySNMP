@@ -1,7 +1,12 @@
 ﻿@model System.Data.DataTable
 @using System.Data
+@using MIB.Models
 @{
     ViewBag.Title = "Index";
+    var safeStringValue = ViewBag.graph
+          .Replace("\\", "\\\\")
+          .Replace("'", "\\'");
+
 }
 
 <h2>Index</h2>
@@ -32,3 +37,64 @@
         </tr>
     }
 </table>
+<hr />
+<div id="main" style="width: 100%;height:500px"></div>
+<input type="hidden" id="customInput" data-value="@ViewBag.graph" />
+
+@section ScriptsHeader {
+    @Scripts.Render("~/bundles/echarts")
+}
+
+<script type="text/javascript">
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
+    var myData =JSON.parse(document.getElementById('customInput').dataset.value);
+    //显示文字
+    myData.edges.map(x => x.label = {
+        show: true,
+        formatter: x.text,
+        fontSize:12,
+    })
+    option = {
+        title: {
+            text: 'Basic Graph'
+        },
+        tooltip: {},
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+            {
+                type: 'graph',
+                layout: 'force',
+                symbolSize: 50,
+                roam: true,
+                label: {
+                    show: true
+                },
+                @*edgeSymbol: ['circle', 'arrow'],*@
+                edgeSymbolSize: [4, 10],
+                edgeLabel: {
+                    fontSize: 20
+                },
+                force: {
+                    edgeLength: 400,
+                    repulsion:400, 
+                },
+                draggable: true,
+                data: myData.nodes,
+                // links: [],
+                links: myData.edges,
+                lineStyle: {
+                   opacity: 0.9,
+                    width: 2,
+                    curveness: 0
+               }
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+</script>
+
+

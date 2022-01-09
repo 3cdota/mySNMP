@@ -6,6 +6,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MIB;
+using MIB.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MIB.Controllers
 {
@@ -16,7 +19,14 @@ namespace MIB.Controllers
         {
             //return View(GetLldpRemTable(ip));
             //return View(GetLldpLocProtTable(ip));
-            return View(MeargeTable(ip));
+            DataTable dt = MeargeTable(ip);
+            //大小写和echarts保持一致
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            ViewBag.graph =JsonConvert.SerializeObject(GetGraph(dt,ip), serializerSettings);
+            return View(dt);
+            
+            
 
         }
         public DataTable GetLldpRemTable(string host)
@@ -61,6 +71,37 @@ namespace MIB.Controllers
                         };           
             DataTable orderTable = query.CopyToDataTable();
             return orderTable;
+
+        }
+        public Graph GetGraph(DataTable dt,string localName)
+        {
+            Graph g = new Graph();
+            //本机节点
+            Graph.Node localNode = new Graph.Node();
+            localNode.Name = localName;
+            g.Nodes.Add(localNode);
+            //远端节点
+            if (dt?.Rows?.Count > 0)
+            {
+
+                foreach(DataRow dr in dt.Rows)
+                {
+                    //添加节点
+                    Graph.Node remoteNode = new Graph.Node();
+                    remoteNode.Name = dr["lldpRemSysName"].ToString();
+                    g.Nodes.Add(remoteNode);
+                    //添加边
+                    string lldpLocPortId = dr["lldpLocPortId"].ToString();
+                    string lldpRemPortId = dr["lldpRemPortId"].ToString();
+                    Graph.Edge edge = new Graph.Edge();
+                    edge.Source = localNode.Name;
+                    edge.Target = remoteNode.Name;
+                    edge.Text = lldpLocPortId + "---" + lldpRemPortId;
+                    g.Edges.Add(edge); 
+                }
+
+            }
+            return g;
 
         }
     }
