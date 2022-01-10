@@ -67,7 +67,8 @@ namespace MIB.Controllers
                             lldpLocPortNum = b["lldpLocPortNum"],
                             lldpLocPortId = b["lldpLocPortId"],
                             lldpRemPortId = a["lldpRemPortId"],
-                            lldpRemSysName = a["lldpRemSysName"]
+                            lldpRemSysName = a["lldpRemSysName"],
+                            lldpRemChassisId = a["lldpRemChassisId"]
                         };           
             DataTable orderTable = query.CopyToDataTable();
             return orderTable;
@@ -78,7 +79,8 @@ namespace MIB.Controllers
             Graph g = new Graph();
             //本机节点
             Graph.Node localNode = new Graph.Node();
-            localNode.Name = localName;
+            localNode.SysName = localName;
+            localNode.ChassisId = localName;
             g.Nodes.Add(localNode);
             //远端节点
             if (dt?.Rows?.Count > 0)
@@ -88,16 +90,34 @@ namespace MIB.Controllers
                 {
                     //添加节点
                     Graph.Node remoteNode = new Graph.Node();
-                    remoteNode.Name = dr["lldpRemSysName"].ToString();
-                    g.Nodes.Add(remoteNode);
+                    remoteNode.SysName = dr["lldpRemSysName"].ToString();
+                    remoteNode.ChassisId = dr["lldpRemChassisId"].ToString();
+                    if (!g.Nodes.Exists(n=>n.ChassisId==remoteNode.ChassisId&&n.SysName==remoteNode.SysName))
+                    {
+                        g.Nodes.Add(remoteNode);
+                    }
                     //添加边
                     string lldpLocPortId = dr["lldpLocPortId"].ToString();
                     string lldpRemPortId = dr["lldpRemPortId"].ToString();
                     Graph.Edge edge = new Graph.Edge();
-                    edge.Source = localNode.Name;
-                    edge.Target = remoteNode.Name;
-                    edge.Text = lldpLocPortId + "---" + lldpRemPortId;
-                    g.Edges.Add(edge); 
+                    edge.Source = localNode.ChassisId;
+                    edge.Target = remoteNode.ChassisId;
+
+                    Graph.Edge oldEdge = g.Edges.Find(e => e.Source == edge.Source && e.Target == edge.Target);
+                    //如果已经存在该边，则在文字说明中增加端口连接关系
+                    if(oldEdge!=null)
+                    {
+                        oldEdge.Texts.Add(lldpLocPortId + "-->" + lldpRemPortId);
+                    }
+                    //否则新增边
+                    else
+                    {
+                        edge.Texts.Add(lldpLocPortId + "-->" + lldpRemPortId);
+                        g.Edges.Add(edge);
+
+                    }
+                    
+                     
                 }
 
             }

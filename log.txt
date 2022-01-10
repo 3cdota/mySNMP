@@ -26,3 +26,6 @@
 2022-01-09 23:17:07.9694|WARN|MIB.EasySnmp|No results received.
 2022-01-09 23:18:48.1416|WARN|MIB.EasySnmp|No results received.
 2022-01-09 23:18:54.1439|WARN|MIB.EasySnmp|No results received.
+2022-01-10 18:38:40.4443|WARN|MIB.EasySnmp|No results received.
+2022-01-10 18:38:47.0040|WARN|MIB.EasySnmp|No results received.
+2022-01-10 18:40:38.6441|WARN|MIB.EasySnmp|No results received.

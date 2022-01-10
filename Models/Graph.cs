@@ -11,7 +11,18 @@ namespace MIB.Models
         public List<Edge> Edges { get; set; } = new List<Edge>();
         public class Node
         {
-            public string Name { get; set; }
+            /// <summary>
+            /// 和 echarts name对应
+            /// </summary>
+            public string Name
+            {
+                get
+                {
+                    return ChassisId;
+                }
+            }
+            public string ChassisId { get; set; }
+            public string SysName { get; set; }
         }
         public class Edge
         {
@@ -20,7 +31,16 @@ namespace MIB.Models
             /// <summary>
             /// 边上显示的内容
             /// </summary>
-            public string Text { get; set; }
+            public string Text
+            { get
+                {
+                    return string.Join("<br/><br/>", Texts.ToArray())
+                        .Replace("GigabitEthernet", "GE");
+
+                }
+            }
+
+            public List<string> Texts = new List<string>();
 
         }
 
